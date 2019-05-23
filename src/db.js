@@ -13,7 +13,7 @@ function getConnection(connectionString) {
   })
 }
 
-module.exports = (opts) => {
+module.exports = opts => {
   const connectionString = getConnectionString(opts.user, opts.password, opts.host, opts.database)
   const mssql = getConnection(connectionString)
 
@@ -21,23 +21,21 @@ module.exports = (opts) => {
     connection: mssql,
     async getTables() {
       try {
-        const tables = await mssql
-          .raw(`
+        const tables = await mssql.raw(`
             SELECT table_name
             FROM information_schema.tables
             WHERE table_type = 'BASE TABLE'
             AND table_name not like '[__]%'
           `) // __ is reserved name in GraphQL
 
-          return tables.map(x => x.table_name)
-      } catch(err) {
+        return tables.map(x => x.table_name)
+      } catch (err) {
         console.error(err)
       }
     },
     async getOrdenedTableReferences() {
       try {
-        const fkReferences = await mssql
-          .raw(`
+        const fkReferences = await mssql.raw(`
           SELECT  
               KCU1.TABLE_NAME AS fromTableName 
               ,KCU1.COLUMN_NAME AS fromColumnName
@@ -58,15 +56,15 @@ module.exports = (opts) => {
           WHERE KCU1.TABLE_NAME != KCU2.TABLE_NAME
           `)
 
-          return getOrdenedTables(fkReferences)
-      } catch(err) {
+        return fkReferences
+      } catch (err) {
         console.error(err)
       }
     },
     async getTableStructure(tableName) {
       try {
-        const structure = await mssql
-          .raw(`
+        const structure = await mssql.raw(
+          `
             select 
               c.table_name as tableName, 
               c.COLUMN_NAME as columnName,
@@ -78,41 +76,14 @@ module.exports = (opts) => {
             LEFT JOIN INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE cu on c.COLUMN_NAME = cu.COLUMN_NAME AND c.TABLE_NAME = cu.TABLE_NAME
             LEFT JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS t on t.CONSTRAINT_NAME = cu.CONSTRAINT_NAME AND c.TABLE_NAME = cu.TABLE_NAME
             WHERE c.table_name = ?
-          `, [tableName])
-        
-        return structure;
-      } catch(err) {
+          `,
+          [tableName]
+        )
+
+        return structure
+      } catch (err) {
         console.error(err)
       }
     }
   }
-}
-
-function getOrdenedTables(arr) {
-	const tree = []
-	function walk(arr, nextItem) {
-		nextItem.seen = true;
-		const nexttoTableNameCheck = arr.filter(x => x.fromTableName === nextItem.toTableName && !x.seen);
-		
-		if (nexttoTableNameCheck.length > 0) {
-			for (const next of nexttoTableNameCheck) {
-				walk(arr, next);
-        tree.push(nextItem);
-			}
-		} else {
-      tree.push(nextItem);
-    }
-		
-		const next = arr.find(x => !x.seen);
-		if (next) {
-			walk(arr, next)
-		}
-		
-		return tree;
-	}
-
-	return [
-    ...walk(arr, arr[0]),
-    ...arr // just add the original arr as a quick hack
-  ]
 }
