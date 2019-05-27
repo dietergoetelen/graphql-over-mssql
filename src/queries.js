@@ -1,5 +1,6 @@
 const { GraphQLObjectType, GraphQLList, GraphQLInputObjectType } = require('graphql')
 const getFields = require('./fields')
+const getWhere = require('./where')
 
 const joinMonster = require('join-monster').default
 
@@ -18,6 +19,7 @@ module.exports = (tables, sortedTableReferences, connection) => {
     const primaryKey = constraint.columnName
 
     const fields = getFields(columns)
+    const whereFields = getFields(columns, true)
 
     const type = new GraphQLObjectType({
       name: tableName,
@@ -71,9 +73,15 @@ module.exports = (tables, sortedTableReferences, connection) => {
 
     const filterType = new GraphQLInputObjectType({
       name: tableName + "_bool_exp",
-      fields: {
-        ...fields
-      }
+      fields: () => ({
+        _or: {
+          type: filterType
+        },
+        _and: {
+          type: filterType
+        },
+        ...whereFields
+      })
     })
 
     return {
@@ -85,8 +93,7 @@ module.exports = (tables, sortedTableReferences, connection) => {
         type: new GraphQLList(type),
         where: (table, args, context) => {
           if (args.filter) {
-            const keys = Object.keys(args.filter)
-            return keys.map(key => `${table}.${key} = '${args.filter[key]}'`).join(' AND ')
+            return getWhere(table, args.filter)
           }
         },
         resolve: (parent, args, context, resolveInfo) => {
