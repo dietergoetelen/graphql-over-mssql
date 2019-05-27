@@ -13,6 +13,7 @@ const getAffectedRowsType = (type) => new GraphQLObjectType({
 module.exports = (tables, tableReferences, connection) => {
   const insertAffectedRowsType = getAffectedRowsType('insert')
   const updateAffectedRowsType = getAffectedRowsType('update')
+  const deleteAffectedRowsType = getAffectedRowsType('delete')
 
   return tables.reduce((prev, next) => {
     const { tableName, columns } = next
@@ -25,6 +26,28 @@ module.exports = (tables, tableReferences, connection) => {
 
     return {
       ...prev,
+      ['delete_' + tableName]: {
+        type: deleteAffectedRowsType,
+        args: {
+          where: {
+            type: getType('delete')
+          }
+        },
+        resolve: async(parent, args, context, { fieldName }) => {
+          const [_, table] = fieldName.split('_')
+          const sql = `
+            DELETE FROM ${table}
+            WHERE 
+              ${Object.keys(args.where).map(key => `${key}='${args.where[key]}'`).join(' AND ')}
+          `
+
+          await connection.raw(sql)
+
+          return {
+            affectedRows: 1
+          }
+        }
+      },
       ['update_' + tableName]: {
         type: updateAffectedRowsType,
         args: {
