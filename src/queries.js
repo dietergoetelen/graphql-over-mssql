@@ -1,4 +1,4 @@
-const { GraphQLObjectType, GraphQLList, GraphQLString, GraphQLInputObjectType } = require('graphql')
+const { GraphQLObjectType, GraphQLList, GraphQLInputObjectType } = require('graphql')
 const getFields = require('./fields')
 
 const joinMonster = require('join-monster').default

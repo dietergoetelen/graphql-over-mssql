@@ -1,8 +1,8 @@
-const { GraphQLBoolean, GraphQLString, GraphQLInt, GraphQLFloat, GraphQLNonNull } = require('graphql')
+const { GraphQLBoolean, GraphQLString, GraphQLInt, GraphQLFloat } = require('graphql')
 const regex = /^[_a-zA-Z][_a-zA-Z0-9]*$/
 
 const types = {
-  'varchar': GraphQLInt,
+  'varchar': GraphQLString,
   'decimal': GraphQLFloat,
   'bit': GraphQLBoolean,
   'int': GraphQLInt
