@@ -1,7 +1,11 @@
 {
   "name": "ms-graph",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "description": "GraphQL service over existing MSSQL database",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dietergoetelen/graphql-over-mssql"
+  },
   "main": "index.js",
   "scripts": {
     "dev": "node ./src/cli"
