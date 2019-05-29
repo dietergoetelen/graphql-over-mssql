@@ -3,6 +3,5 @@
 
 ## Usage
 ```
-npm install
-node cli
+npx ms-graphql
 ```  

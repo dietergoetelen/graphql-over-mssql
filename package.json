@@ -1,13 +1,19 @@
 {
-  "name": "node-graphql-generate",
-  "version": "1.0.0",
-  "description": "",
+  "name": "ms-graph",
+  "version": "0.1.5",
+  "description": "GraphQL service over existing MSSQL database",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "node ./src/cli"
   },
-  "keywords": [],
-  "author": "",
+  "bin": {
+    "ms-graph": "./bin/ms-graphql"
+  },
+  "keywords": [
+    "graphql",
+    "mssql"
+  ],
+  "author": "Dieter Goetelen",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.19.0",

@@ -7,10 +7,10 @@ const PORT = process.env.PORT || 4000
 const cors = require('cors')
 const bodyParser = require('body-parser')
 const inquirer = require('inquirer')
-const db = require('./src/db')
-const generateQueries = require('./src/queries')
-const generateMutations = require('./src/mutations')
-const generateSchema = require('./src/schema')
+const db = require('../src/db')
+const generateQueries = require('../src/queries')
+const generateMutations = require('../src/mutations')
+const generateSchema = require('../src/schema')
 
 async function promptMessage(prop, message, type = 'input') {
   return await inquirer.prompt([
