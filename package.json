@@ -27,7 +27,7 @@
     "graphql": "^14.3.0",
     "inquirer": "^6.3.1",
     "join-monster": "^2.1.0",
-    "knex": "^0.17.0-next3",
+    "knex": "^0.19.5",
     "mssql": "^5.1.0"
   }
 }
